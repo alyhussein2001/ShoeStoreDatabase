@@ -6,8 +6,8 @@ CREATE TABLE ShoeInfo (
     Brand    TEXT    NOT NULL,
     ShoeName TEXT    NOT NULL,
     Gender   TEXT    NOT NULL,
-    Size     INTEGER NOT NULL,
-    Price    NUMERIC NOT NULL,
+    Size     REAL NOT NULL,
+    Price    NUMERIC NOT NULL
 );
 
 --Table structure for table 'Customer'
@@ -17,20 +17,19 @@ CREATE TABLE Customer (
 			NOT NULL,
     FirstName	TEXT	NOT NULL,
     LastName	TEXT	NOT NULL,
-    Email	TEXT	NOT NULL,
+    Email	TEXT	NOT NULL
 );
 
 --Table structure for table 'Order'
-CREATE TABLE Order (
+CREATE TABLE Orders (
     OrderID	INTEGER PRIMARY KEY
 			UNIQUE
 			NOT NULL,
     CustomerID	INTEGER	NOT NULL
 			REFERENCES Customer (CustomerID),
-    OrderDate	DATE	NOT NULL
+    OrderDate	DATE	NOT NULL,
     ShoeID	INTEGER	NOT NULL
-			REFERENCES ShoeInfo (ShoeID),
-
+			REFERENCES ShoeInfo (ShoeID)
 );
 
 --Inserting data into the ShoeInfo table
@@ -45,8 +44,8 @@ VALUES (101, 'Nike', 'Airmax 95', 'M', 9, 119.99),
 INSERT INTO Customer (CustomerID, FirstName, LastName, Email)
 VALUES (1, 'Jane', 'Smith', 'jane.smith@example.com')
 (2, 'John', 'Doe', 'john.doe@example.com')
-(3, 'Mike', 'Johnson', mike.johnson@example.com')
-(4, 'Jackie', 'Norma', jackie.norma@example.com')
+(3, 'Mike', 'Johnson', 'mike.johnson@example.com')
+(4, 'Jackie', 'Norma', 'jackie.norma@example.com')
 (5, 'Zane', 'Bean', 'zane.bean@example.com');
 
 --Inserting data into the Order table
@@ -58,7 +57,7 @@ VALUES(201, 1, '2024-01-28', 102),
 (205, 5, '2024-01-25', 105);
 
 --Display all customers
-SELECT * FROM Customers;
+SELECT * FROM Customer;
 
 --Display customer details along with their orders
 SELECT Customer.CustomerID, FirstName, LastName, Email, OrderID, OrderDate
@@ -75,5 +74,31 @@ WHERE Order.OrderID IS NULL;
 SELECT Customer.CustomerID, FirstName, LastName, Email, MAX(OrderDate) AS LatestOrderDate
 FROM Customer
 LEFT JOIN Order ON Customer.CustomerID = Order.CustomerID
-GROUP BY Customer.CustomerID;
+GROUP BY Customer.CustomerID, FirstName, LastName, Email;
+
+--Displays total revenue from all orders
+SELECT SUM(Price) AS TotalRevenue
+FROM Orders
+JOIN ShoeInfo ON Orders.ShoeID = ShoeInfo.ShoeID;
+
+--Display how much each customer has spent
+SELECT c.CustomerID, c.FirstName, C.LastName, SUM(s.Price) AS TotalSpent
+FROM Customer c
+JOIN Orders o ON c.CustomerID = o.CustomerID
+JOIN ShoeInfo s ON o.ShoeID = s.ShoeID
+GROUP BY c.CustomerID, c.FirstName, c.LastName;
+
+--Most popular shoe (most frequently ordered)
+SELECT s.ShoeName, COUNT(o.OrderID) AS TotalOrders
+FROM Orders o
+JOIN ShoeInfo s ON o.ShoeID = s.ShoeID
+GROUP BY s.ShoeName
+ORDER BY TotalOrders DESC;
+
+--How many orders were placed each day
+SELECT OrderDate, COUNT(OrderID) AS TotalOrders
+FROM Orders
+GROUP BY OrderDate
+ORDER BY OrderDate;
+
 
