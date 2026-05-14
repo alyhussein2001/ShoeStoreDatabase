@@ -1,8 +1,6 @@
 --Table structure for table 'ShoeInfo'
 CREATE TABLE ShoeInfo (
-    ShoeID   INTEGER PRIMARY KEY
-                     UNIQUE
-                     NOT NULL,
+    ShoeID   INTEGER PRIMARY KEY,
     Brand    TEXT    NOT NULL,
     ShoeName TEXT    NOT NULL,
     Gender   TEXT    NOT NULL,
@@ -42,14 +40,14 @@ VALUES (101, 'Nike', 'Airmax 95', 'M', 9, 119.99),
 
 --Inserting data into the Customer table
 INSERT INTO Customer (CustomerID, FirstName, LastName, Email)
-VALUES (1, 'Jane', 'Smith', 'jane.smith@example.com')
-(2, 'John', 'Doe', 'john.doe@example.com')
-(3, 'Mike', 'Johnson', 'mike.johnson@example.com')
-(4, 'Jackie', 'Norma', 'jackie.norma@example.com')
+VALUES (1, 'Jane', 'Smith', 'jane.smith@example.com'),
+(2, 'John', 'Doe', 'john.doe@example.com'),
+(3, 'Mike', 'Johnson', 'mike.johnson@example.com'),
+(4, 'Jackie', 'Norma', 'jackie.norma@example.com'),
 (5, 'Zane', 'Bean', 'zane.bean@example.com');
 
 --Inserting data into the Order table
-INSERT INTO Order(OrderID, CustomerID, OrderDate, ShoeID)
+INSERT INTO Orders(OrderID, CustomerID, OrderDate, ShoeID)
 VALUES(201, 1, '2024-01-28', 102),
 (202, 2, '2024-01-21', 104),
 (203, 3, '2024-01-13', 103),
@@ -62,18 +60,18 @@ SELECT * FROM Customer;
 --Display customer details along with their orders
 SELECT Customer.CustomerID, FirstName, LastName, Email, OrderID, OrderDate
 FROM Customer
-JOIN Order ON Customer.CustomerID = Order.CustomerID;
+JOIN Orders ON Customer.CustomerID = Orders.CustomerID;
 
 --Display customers who have not placed any orders
 SELECT Customer.CustomerID, FirstName, LastName, Email
 FROM Customer
-LEFT JOIN Order ON Customer.CustomerID = Order.CustomerID
+LEFT JOIN Orders ON Customer.CustomerID = Orders.CustomerID
 WHERE Order.OrderID IS NULL;
 
 --Display most recent order for each customer
 SELECT Customer.CustomerID, FirstName, LastName, Email, MAX(OrderDate) AS LatestOrderDate
 FROM Customer
-LEFT JOIN Order ON Customer.CustomerID = Order.CustomerID
+LEFT JOIN Order ON Customer.CustomerID = Orders.CustomerID
 GROUP BY Customer.CustomerID, FirstName, LastName, Email;
 
 --Displays total revenue from all orders
